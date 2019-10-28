@@ -1,19 +1,15 @@
-from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from server.speagle.serializers import UserSerializer, GroupSerializer
+from . import models
+from . import serializers
 
+class FriendViewset(viewsets.ModelViewSet):
+    queryset = models.Friend.objects.all()
+    serializer_class = serializers.FriendSerializer
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
+class BelongingViewset(viewsets.ModelViewSet):
+    queryset = models.Belonging.objects.all()
+    serializer_class = serializers.BelongingSerializer
 
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
+class BorrowedViewset(viewsets.ModelViewSet):
+    queryset = models.Borrowed.objects.all()
+    serializer_class = serializers.BorrowedSerializer
