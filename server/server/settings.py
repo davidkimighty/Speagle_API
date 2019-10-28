@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'server.speagle',
     'djoser',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
