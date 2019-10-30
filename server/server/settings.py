@@ -29,17 +29,19 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
+# Authintication settings
+# REST_FRAMEWORK = {
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated',
+#     ),
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#     ),
+# }
 
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ),
-}
+# extending AbstractUser model
+AUTH_USER_MODEL = 'speagle.User'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -49,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'server.speagle',
+    'speagle',
 ]
 
 MIDDLEWARE = [
