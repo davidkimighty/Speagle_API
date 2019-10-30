@@ -12,6 +12,7 @@ djoser = "*"
 djangorestframework-simplejwt = "*"
 social-auth-app-django = "*"
 pillow = "*"
+django-rest-auth = "*"
 
 [requires]
 python_version = "3.7"
