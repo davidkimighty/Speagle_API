@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
 from django.conf import settings
@@ -12,8 +12,6 @@ GENDER_CHOICES = (
     )
 
 class UserManager(BaseUserManager):
-    #use_in_migrations = True
-
     def _create_user(self, email, password=None, is_active=True, is_staff=False, is_admin=False):
         if not email:
             raise ValueError('email must be set')
@@ -22,9 +20,9 @@ class UserManager(BaseUserManager):
 
         user_obj = self.model(email=self.normalize_email(email))
         user_obj.set_password(password)
-        user_obj.is_staff = is_staff
-        user_obj.is_admin = is_admin
-        user_obj.is_active = is_active
+        user_obj.active = is_active
+        user_obj.staff = is_staff
+        user_obj.admin = is_admin
         user_obj.save(using=self._db)
         return user_obj
 
@@ -47,14 +45,20 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email'), unique=True)
+    active = models.BooleanField(_('active'), default=True)
+    staff = models.BooleanField(_('staff'), default=False)
+    admin = models.BooleanField(_('admin'), default=False)
+    # is_superuser = models.BooleanField(_('superuser'), default=False)
+
     date_joined = models.DateTimeField(_('date joined'), auto_now_add=True)
     last_login = models.DateTimeField(_('last login'), auto_now=True)
-    is_active = models.BooleanField(_('active'), default=True)
-    is_staff = models.BooleanField(_('staff'), default=False)
-    # is_superuser = models.BooleanField(_('superuser'), default=False)
-    is_admin = models.BooleanField(_('admin'), default=False)
-    # avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    gender = models.CharField(_('gender'), max_length=1, choices=GENDER_CHOICES, blank=True)
+    dob = models.DateField(_('date of birth'), null=True, blank=True)
+    country = models.CharField(_('country'), max_length=50, blank=True)
+    photo = models.ImageField(upload_to='uploads', null=True, blank=True)
 
     objects = UserManager()
 
@@ -84,22 +88,22 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_staff(self):
-        return self.is_staff
+        return self.staff
 
     @property
     def is_admin(self):
-        return self.is_admin
+        return self.admin
 
     @property
     def is_active(self):
-        return self.is_active
+        return self.active
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
-    username = models.CharField(_('username'), max_length=10, unique=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    gender = models.CharField(_('gender'), max_length=1, choices=GENDER_CHOICES)
-    dob = models.DateField(_('date of birth'), blank=True)
-    country = models.CharField(_('country'),max_length=50)
-    photo = models.ImageField(upload_to='uploads', null=True, blank=True)
+# class UserProfile(models.Model):
+#     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+#     username = models.CharField(_('username'), max_length=10, blank=True)
+#     first_name = models.CharField(_('first name'), max_length=30, blank=True)
+#     last_name = models.CharField(_('last name'), max_length=30, blank=True)
+#     gender = models.CharField(_('gender'), max_length=1, choices=GENDER_CHOICES, blank=True)
+#     dob = models.DateField(_('date of birth'), blank=True)
+#     country = models.CharField(_('country'),max_length=50)
+#     photo = models.ImageField(upload_to='uploads', null=True, blank=True)

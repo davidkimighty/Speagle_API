@@ -9,7 +9,8 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include('speagle.urls')),
+    # url(r'^api/', include('speagle.urls')),
+    
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     # path('api/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

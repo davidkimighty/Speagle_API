@@ -4,21 +4,28 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
+from .forms import UserAdminCreationForm, UserAdminChangeForm
 
-User = get_user_model
+
+User = get_user_model()
 
 class UserAdmin(BaseUserAdmin):
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
 
-    list_display = ('email', 'standard', 'is_admin', )
-    list_filter = ('standard', 'is_active', 'is_staff', 'is_admin',)
+    list_display = ('email', 'admin', )
+    list_filter = ('active', 'staff', 'admin',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_admin', 'groups', 'user_permissions')}),
+        (_('Personal info'), {
+            'fields': (
+                'first_name', 'last_name', 'gender', 'dob', 'country', 'photo'
+            ),
+        }),
+        (_('Permissions'), {'fields': ('active', 'staff', 'admin')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
+    readonly_fields = ('last_login', 'date_joined',)
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
