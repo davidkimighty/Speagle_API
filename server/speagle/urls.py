@@ -1,13 +1,10 @@
-from django.conf.urls import url, include
-from rest_framework import routers
-from .views import UserViewSet
+from django.urls import include, path, re_path
+
+from .views import SendEmailForValidation
 
 
-router = routers.DefaultRouter()
-# DefaultRouter class will define the standard REST endpoints.
-router.register(r'users', UserViewSet)
+app_name = 'speagle'
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    # url(r'^auth/', include('rest_auth.urls')),
+    re_path(r'^validate_email/', SendEmailForValidation.as_view())
 ]
