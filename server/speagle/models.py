@@ -107,3 +107,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 #     dob = models.DateField(_('date of birth'), blank=True)
 #     country = models.CharField(_('country'),max_length=50)
 #     photo = models.ImageField(upload_to='uploads', null=True, blank=True)
+
+class EmailKey(models.Model):
+    email = models.EmailField(_('email'), unique=True)
+    key = models.CharField(_("key"), max_length=9, blank=True, null=True)
+    count = models.IntegerField(_("count"), default=0)
+    validated = models.BooleanField(_("validated"), default=False)
+
+    def __str__(self):
+        return str(self.email) + ' key : ' + str(self.key)

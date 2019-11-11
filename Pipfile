@@ -13,6 +13,7 @@ djangorestframework-simplejwt = "*"
 social-auth-app-django = "*"
 pillow = "*"
 django-rest-auth = "*"
+django-simple-email-confirmation = "*"
 
 [requires]
 python_version = "3.7"

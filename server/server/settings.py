@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'speagle',
     'rest_framework.authtoken',
     'rest_auth',
+    'simple_email_confirmation',
 ]
 
 MIDDLEWARE = [
