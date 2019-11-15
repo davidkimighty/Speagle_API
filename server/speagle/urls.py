@@ -1,13 +1,7 @@
-from django.conf.urls import url, include
-from rest_framework import routers
-from .views import UserViewSet
+from django.urls import path, include
+from .views import user_index
 
-
-router = routers.DefaultRouter()
-# DefaultRouter class will define the standard REST endpoints.
-router.register(r'users', UserViewSet)
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^auth/', include('rest_auth.urls')),
+    path('api/auth/user_index', user_index.as_view()),
 ]
