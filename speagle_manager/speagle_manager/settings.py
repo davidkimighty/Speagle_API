@@ -37,9 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
-
     'accounts',
 ]
 
@@ -130,5 +128,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Extending AbstractBaseUser
+# Extending User
 AUTH_USER_MODEL = 'accounts.User'

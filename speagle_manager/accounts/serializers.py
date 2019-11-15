@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
 from .models import User
 
@@ -6,9 +8,10 @@ from .models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email')
+        fields = ('id', 'email', 'password')
+        read_only_fields = ['id']
 
-# Register Serializer
+# AbstractBaseUser Register Serializer
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -21,6 +24,34 @@ class RegisterSerializer(serializers.ModelSerializer):
                 validated_data['password']
             )
             return user
+
+# AbstractUser Register Serializer
+class AbstractUserRegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True,validators=[UniqueValidator(queryset=User.objects.all())])
+    password = serializers.CharField(min_length=4, max_length=100, write_only=True)
+    confirm_password = serializers.CharField(min_length=4, max_length=100, write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'password', 'confirm_password', 'date_joined')
+
+    # def create(self, validated_data):
+    #     password = validated_data.pop('password')
+    #     user = User(**validated_data)
+    #     user.set_password(password)
+    #     user.save()
+    #     return user
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            email=validated_data['email'],
+            password=make_password(validated_data['password']))
+        return user
+
+    def validate(self, attrs):
+        if attrs.get('password') != attrs.get('confirm_password'):
+            raise serializers.ValidationError("Passwords don't match.")
+        return attrs
 
 # Login Serializer
 class LoginSerializer(serializers.Serializer):
@@ -45,3 +76,4 @@ class LoginSerializer(serializers.Serializer):
 
         data['user'] = user
         return data
+
