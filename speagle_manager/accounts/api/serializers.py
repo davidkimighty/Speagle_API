@@ -2,8 +2,8 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
+# from django.core.validators import validate_email
+# from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from accounts.models import User
@@ -63,6 +63,7 @@ class AbstractUserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(style={'input_type': 'password'})
 
+    # Email validation needed
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
