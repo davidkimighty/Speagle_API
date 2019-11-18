@@ -7,9 +7,11 @@ verify_ssl = true
 
 [packages]
 django = "*"
-djangorestframework = "*"
+djangorestframework = "==3.7.7"
 django-rest-knox = "*"
 pillow = "*"
+djangorestframework-expiring-authtoken = "*"
+validate-email = "*"
 
 [requires]
 python_version = "3.7"

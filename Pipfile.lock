@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "13e7ff8cb508c01b86d6ca1d3bfc752e7ee707799747d323d32449bbf5a6f820"
+            "sha256": "03b2aae85de374fcdd8db90f6ad0af03a5c764fe33ca7c1adfe726482ce3f303"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -99,11 +99,19 @@
         },
         "djangorestframework": {
             "hashes": [
-                "sha256:5488aed8f8df5ec1d70f04b2114abc52ae6729748a176c453313834a9ee179c8",
-                "sha256:dc81cbf9775c6898a580f6f1f387c4777d12bd87abf0f5406018d32ccae71090"
+                "sha256:9100c49071470dad56c760f439366c203724b2c94242b82e75748750536d8a48",
+                "sha256:ddffda500513adbca7ded260b4f9ede4395289f351ef94d579dfc8923992e3b2"
             ],
             "index": "pypi",
-            "version": "==3.10.3"
+            "version": "==3.4.6"
+        },
+        "djangorestframework-expiring-authtoken": {
+            "hashes": [
+                "sha256:2ea411b1f8643dcfb970e32065cce250b32a9d78514fbd1323b4e8184a733c16",
+                "sha256:a2c6b0032614c9d1364f44de0f4a821ed860ada7516c0542852c60c3d86d461b"
+            ],
+            "index": "pypi",
+            "version": "==0.1.4"
         },
         "pillow": {
             "hashes": [

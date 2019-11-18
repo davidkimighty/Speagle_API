@@ -2,7 +2,11 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
-from .models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
+from django.utils.translation import ugettext_lazy as _
+from accounts.models import User
 
 # User Serializer
 class UserSerializer(serializers.ModelSerializer):
@@ -45,7 +49,8 @@ class AbstractUserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create(
             email=validated_data['email'],
-            password=make_password(validated_data['password']))
+            password=make_password(validated_data['password'])
+        )
         return user
 
     def validate(self, attrs):
@@ -53,13 +58,10 @@ class AbstractUserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Passwords don't match.")
         return attrs
 
-# Login Serializer
-class LoginSerializer(serializers.Serializer):
+# AbstractUser Login Serializer
+class AbstractUserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(
-        style = {'input_type': 'password'},
-        trim_whitespace = False,
-    )
+    password = serializers.CharField(style={'input_type': 'password'})
 
     def validate(self, data):
         email = data.get('email')
@@ -68,12 +70,9 @@ class LoginSerializer(serializers.Serializer):
         if email and password:
             if User.objects.filter(email = email).exists():
                 user = authenticate(
-                    # request = self.context.get('request'),
+                    request = self.context.get('request'),
                     username = email,
                     password = password,
                 )
-                print(user)
-
         data['user'] = user
         return data
-
