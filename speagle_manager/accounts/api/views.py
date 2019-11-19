@@ -3,10 +3,14 @@ from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+
+from django.contrib.auth import (
+    login as django_login,
+    logout as django_logout
+)
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
-import random
 
 from accounts.models import User, ValidationKey
 from .serializers import (
@@ -69,6 +73,7 @@ class VerifyEmailAPI(APIView):
 
 # Create validation key
 def create_key(email):
+    import random
     if email:
         key = random.randint(999, 9999)
         print(key)
@@ -195,8 +200,21 @@ class UserLoginAPI(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
+        # The actual login process
+        django_login(self.request, user)
 
         content = {
             'token': token.key,
         }
         return Response(content)
+
+# Logout API
+class UserLogoutAPI(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, format=None):
+        user = request.user
+        user.auth_token.delete()
+        django_logout(self.request)
+        return Response(status=status.HTTP_200_OK)

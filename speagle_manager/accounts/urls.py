@@ -1,5 +1,7 @@
 from django.urls import path, include, reverse, re_path
-from accounts.api.views import VerifyEmailAPI, VerifyValidationKeyAPI, RegisterAPI, UserRegistrationAPI, UserLoginAPI
+from accounts.api.views import (
+    VerifyEmailAPI, VerifyValidationKeyAPI, RegisterAPI, UserRegistrationAPI, UserLoginAPI, UserLogoutAPI
+)
 
 
 urlpatterns = [
@@ -7,4 +9,5 @@ urlpatterns = [
     path('verify_key/', VerifyValidationKeyAPI.as_view(), name="verify_key"),
     path('register/', UserRegistrationAPI.as_view(), name="register_user"),
     path('login/', UserLoginAPI.as_view(), name="login_user"),
+    path('logout/', UserLogoutAPI.as_view(), name="logout_user"),
 ]
