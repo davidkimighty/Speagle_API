@@ -1,12 +1,17 @@
-from django.urls import reverse
 from rest_framework import generics, permissions, status
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from accounts.models import User, ValidationKey
-from .serializers import UserSerializer, RegisterSerializer, AbstractUserRegisterSerializer, AbstractUserLoginSerializer
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
 import random
+
+from accounts.models import User, ValidationKey
+from .serializers import (
+    UserSerializer, RegisterSerializer, AbstractUserRegisterSerializer, AbstractUserLoginSerializer
+)
 
 # Verify email and send validation key
 class VerifyEmailAPI(APIView):
@@ -27,7 +32,7 @@ class VerifyEmailAPI(APIView):
             else:
                 new_key = create_key(email)
                 if new_key:
-                    send_mail(email, new_key)
+                    sendValidationKey(request, email, new_key)
                     key = ValidationKey.objects.filter(email__iexact=email)
 
                     if key.exists():
@@ -72,10 +77,14 @@ def create_key(email):
         return False
 
 # Send validation key through email 
-def send_mail(email, new_key):
+def sendValidationKey(request, email, new_key):
     if email:
-        # smtp needed
-        print(email)
+        subject = 'Welcome to Speagle'
+        message = ' This is your validation key -> ' + str(new_key) + ' '
+        email_from = settings.EMAIL_HOST_USER
+
+        recipient_list = [email,]
+        send_mail( subject, message, email_from, recipient_list )
 
 # Verify validation key
 class VerifyValidationKeyAPI(APIView):
