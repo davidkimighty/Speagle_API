@@ -13,7 +13,7 @@ from accounts.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'password')
+        fields = ('id', 'email', )
         read_only_fields = ['id']
 
 # AbstractBaseUser Register Serializer

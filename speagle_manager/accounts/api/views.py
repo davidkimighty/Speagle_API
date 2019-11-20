@@ -4,10 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 
-from django.contrib.auth import (
-    login as django_login,
-    logout as django_logout
-)
+# from django.contrib.auth import (
+#     login as django_login,
+#     logout as django_logout
+# )
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
@@ -199,9 +199,10 @@ class UserLoginAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        ''' If the user is authenticated, below method will create or retrieve token for the existing user.
+        Token authentication will need token in every API calls that needs authentication. '''
         token, created = Token.objects.get_or_create(user=user)
-        # The actual login process
-        django_login(self.request, user)
+        # django_login(self.request, user) # Used for session login
 
         content = {
             'token': token.key,
@@ -215,6 +216,14 @@ class UserLogoutAPI(APIView):
 
     def get(self, request, format=None):
         user = request.user
-        user.auth_token.delete()
-        django_logout(self.request)
-        return Response(status=status.HTTP_200_OK)
+        if user.exists():
+            ''' Request should include Authorization in headers.
+            For example -> key would be Authorization and value would be Token cc5ff8720ded0009b40ccc2fb25c6f3d725658a0 '''
+            user.auth_token.delete()
+            # django_logout(self.request) # Used for session logout
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'status': False,
+                'details': 'AnonymousUser.'
+            })
