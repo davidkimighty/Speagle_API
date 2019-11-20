@@ -11,6 +11,8 @@ pillow = "*"
 validate-email = "*"
 djangorestframework = "*"
 django = "*"
+channels = "*"
+channels-redis = "*"
 
 [requires]
 python_version = "3.7"
