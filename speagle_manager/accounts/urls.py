@@ -1,5 +1,5 @@
 from django.urls import path, include, reverse, re_path
-from accounts.api.views import (
+from .views import (
     VerifyEmailAPI, VerifyValidationKeyAPI, RegisterAPI, UserRegistrationAPI, UserLoginAPI, UserLogoutAPI
 )
 
