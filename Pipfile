@@ -13,6 +13,7 @@ djangorestframework = "*"
 django = "*"
 channels = "*"
 channels-redis = "*"
+selenium = "*"
 
 [requires]
 python_version = "3.7"
