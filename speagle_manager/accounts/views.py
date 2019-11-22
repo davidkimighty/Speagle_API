@@ -205,8 +205,7 @@ class UserLoginAPI(generics.GenericAPIView):
         # django_login(self.request, user) # Used for session login
 
         content = {
-            'status': True,
-            'details': token.key,
+            'token': token.key,
         }
         return Response(content)
 
