@@ -56,6 +56,16 @@ REST_FRAMEWORK = {
     )
 }
 
+# It is possible to have multiple channel layers configured.
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -86,6 +96,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'speagle_manager.wsgi.application'
 
+# Channels
+ASGI_APPLICATION = 'speagle_manager.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -150,7 +162,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 # Extending User
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -161,16 +172,3 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'teamspeagle@gmail.com'
 EMAIL_HOST_PASSWORD = 'speaglebeagle123'
-
-# Channels
-ASGI_APPLICATION = 'speagle_manager.routing.application'
-
-# It is possible to have multiple channel layers configured.
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}
