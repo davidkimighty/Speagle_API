@@ -205,7 +205,8 @@ class UserLoginAPI(generics.GenericAPIView):
         # django_login(self.request, user) # Used for session login
 
         content = {
-            'token': token.key,
+            'status': True,
+            'details': token.key,
         }
         return Response(content)
 
@@ -221,7 +222,10 @@ class UserLogoutAPI(APIView):
             For example -> key would be Authorization and value would be Token cc5ff8720ded0009b40ccc2fb25c6f3d725658a0 '''
             user.auth_token.delete()
             # django_logout(self.request) # Used for session logout
-            return Response(status=status.HTTP_200_OK)
+            return Response({
+                'status': True,
+                'details': 'Logged out.',
+            })
         else:
             return Response({
                 'status': False,
