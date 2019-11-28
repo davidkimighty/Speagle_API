@@ -26,15 +26,12 @@ SECRET_KEY = '8m0o4(=2qv8*5*uvq+y@a1l+ry(smyjwu$=dp@^())s5snqw!m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'channels',
-    'accounts',
-    'chat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    
+    'channels',
+    'accounts',
+    'chat',
 ]
 
 REST_FRAMEWORK = {
