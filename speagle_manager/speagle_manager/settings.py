@@ -49,6 +49,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -93,10 +94,11 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'speagle_manager.wsgi.application'
+# WSGI_APPLICATION = 'speagle_manager.wsgi.application'
 
 # Channels
 ASGI_APPLICATION = 'speagle_manager.routing.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

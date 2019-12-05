@@ -2,20 +2,31 @@ from rest_framework import generics, permissions, status
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
 
-# from django.contrib.auth import (
-#     login as django_login,
-#     logout as django_logout
-# )
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import (
+    login as django_login,
+    logout as django_logout
+)
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.views.decorators.csrf import csrf_exempt
+
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 
 from .models import User, ValidationKey
 from .serializers import (
-    UserSerializer, RegisterSerializer, AbstractUserRegisterSerializer, AbstractUserLoginSerializer
+    UserSerializer,
+    RegisterSerializer,
+    AbstractUserRegisterSerializer,
+    AbstractUserLoginSerializer,
 )
+
+
+'''
+-------------------- Email Varification --------------------
+'''
 
 # Verify email and send validation key
 class VerifyEmailAPI(APIView):
@@ -129,20 +140,30 @@ class VerifyValidationKeyAPI(APIView):
                 'details': 'Email & validation key must be set.'
             })
 
-# Register API
+
+'''
+-------------------- Registration API --------------------
+'''
+
 class RegisterAPI(generics.GenericAPIView):
     authentication_classes = ()
-    permission_classes = ()
+    permission_classes = (permissions.AllowAny, )
     serializer_class = AbstractUserRegisterSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        return Response({'user': UserSerializer(user, context=self.get_serializer_context()).data, })
+        return Response({
+            'user': UserSerializer(user, context=self.get_serializer_context()).data,
+        })
 
-# Register API with token
-class UserRegistrationAPI(CreateAPIView):
+
+'''
+-------------------- Token Resgistration --------------------
+'''
+
+class TokenRegistrationAPI(CreateAPIView):
     authentication_classes = ()
     permission_classes = (permissions.AllowAny,)
     serializer_class = AbstractUserRegisterSerializer
@@ -190,8 +211,8 @@ class UserRegistrationAPI(CreateAPIView):
                 'details': 'Email & password must be set.'
             })
 
-# Login API
-class UserLoginAPI(generics.GenericAPIView):
+
+class TokenLoginAPI(generics.GenericAPIView):
     permission_classes = (permissions.AllowAny, )
     serializer_class = AbstractUserLoginSerializer
 
@@ -199,18 +220,19 @@ class UserLoginAPI(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        ''' If the user is authenticated, below method will create or retrieve token for the existing user.
-        Token authentication will need token in every API calls that needs authentication. '''
+        ''' If the user is authenticated, below method will create or retrieve
+        token for the existing user. Token authentication will need token
+        in every API calls that needs authentication. '''
         token, created = Token.objects.get_or_create(user=user)
         # django_login(self.request, user) # Used for session login
 
-        content = {
-            'token': token.key,
-        }
-        return Response(content)
+        return Response({
+            'status': True,
+            'details': token.key
+        })
 
-# Logout API
-class UserLogoutAPI(APIView):
+
+class TokenLogoutAPI(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     # permission_classes = (permissions.AllowAny, )
 
@@ -218,9 +240,80 @@ class UserLogoutAPI(APIView):
         user = request.user
         if user.exists():
             ''' Request should include Authorization in headers.
-            For example -> key would be Authorization and value would be Token cc5ff8720ded0009b40ccc2fb25c6f3d725658a0 '''
+            For example -> key would be Authorization and value would be
+            Token cc5ff8720ded0009b40ccc2fb25c6f3d725658a0 '''
             user.auth_token.delete()
             # django_logout(self.request) # Used for session logout
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'status': False,
+                'details': 'AnonymousUser.'
+            })
+
+
+'''
+-------------------- JWT Resgistration --------------------
+'''
+
+class JWTLoginAPI(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny, )
+    serializer_class = AbstractUserLoginSerializer
+
+    def get_tokens_for_user(self, user):
+        refresh = RefreshToken.for_user(user)
+
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+
+        token = self.get_tokens_for_user(user)
+        refresh_token = token.get('refresh')
+        access_token = token.get('access')
+
+        # Needs argument weather if it's expired or not.
+
+        return Response({
+            'status': True,
+            'details': refresh_token
+        })
+
+
+'''
+-------------------- Session Login & Logout --------------------
+'''
+
+class SessionLoginAPI(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny, )
+    serializer_class = AbstractUserLoginSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        
+        django_login(request, user)
+
+        return Response({
+            'status': True,
+            'details': 'Login successful'
+        })
+
+
+class SessionLogoutAPI(APIView):
+    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny, )
+
+    def get(self, request, format=None):
+        user = request.user
+        if user.exists():
+            django_logout(request)
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({
