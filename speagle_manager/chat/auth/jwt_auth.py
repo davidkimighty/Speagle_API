@@ -54,12 +54,12 @@ class JWTAuthMiddleware(JWTBaseAuthMiddleware):
 
     async def resolve_scope(self, scope, receive, send):
         token = parse_qs(scope['query_string'].decode('utf8'))['token'][0]
-        # print('token -> ' + str(token))
+        print('token -> ' + str(token))
 
         try:
             UntypedToken(token) # Verify JWT
             decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=['HS256'])
-            # print('decoded_data -> ' + str(decoded_data))
+            print('decoded_data -> ' + str(decoded_data))
 
             scope['user'] = await get_user(self, scope, decoded_data)
             print('middleware scope -> ' + str(scope))
