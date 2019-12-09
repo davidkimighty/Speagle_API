@@ -10,7 +10,6 @@ import json
                              
 from .models import MessageThread, Message, Unreads
 from .serializers import MessageSerializer, MessageListSerializer, ThreadSerializer, ThreadListSerializer
-# from userauth import models as userauth_models
 
 
 def index(request):
